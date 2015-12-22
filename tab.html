@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<style>
+#box{  width:200px;  height:auto;}
+input.active{ background:yellow;}
+#box div{ width:200px;height:200px; border:1px solid #ccc;  display:none;}
+#box div.active{ display:block;}
+</style>
+</head>
+
+<body>
+<div id="box">
+	<input type="button" value="btn1" class="active" />
+	<input type="button" value="btn2" />
+	<input type="button" value="btn3" />
+    <div class="active">1</div>
+    <div>2</div>
+    <div>3</div>
+</div>
+</body>
+<script>
+	var aBtn=document.getElementsByTagName('input');
+	var oBox=document.getElementById('box');
+	var aDiv=oBox.getElementsByTagName('div');
+	for(var i=0;i<aDiv.length;i++){
+		aBtn[i].index=i;
+		aBtn[i].onclick=function(){
+			for(var i=0;i<aBtn.length;i++){
+				aBtn[i].className='';
+				aDiv[i].className='';
+			}
+			aBtn[this.index].className='active';
+			aDiv[this.index].className='active';
+		};	
+	}
+	
+</script>
+</html>
