@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="图片旋转, javascript" />
+<meta name="description" content="Helloweba演示平台，演示XHTML、CSS、jquery、PHP案例和示例" />
+<title>Javascript与HTML5的canvas实现图片旋转效果-Helloweba演示平台</title>
+<!--<link rel="stylesheet" type="text/css" href="../css/main.css" />-->
+<style type="text/css">
+*{ margin:0; padding:0}
+li{ list-style:none;}
+a{ text-decoration:none;}
+img{ display:block; width:400px; height:200px;}
+#demo{width:650px; height:350px; position:absolute;}
+#arr_left,#arr_right,#clean{ display:block; position:absolute; color:#FFF; font-size:50px; text-align:center;}
+#box{ width:1340px; margin:0 auto;}
+#ul1{ overflow:hidden; background:#FF0; padding:20px; width:1340px; margin:0 auto; position:absolute;}
+#ul1 li{ width:400px; height:200px;  float:left; margin:0 20px 20px 20px;}
+</style>
+<script>
+var EventUtil = {
+	addReady:function(handler){
+		if(document.addEventListener){
+		   document.addEventListener('DOMContentLoaded',handler, false);
+		}else{	
+		   document.attachEvent('onreadystatechange', function (){
+			  if(document.readyState=='complete'){
+					   handler();
+			  }
+		   });		
+		}		
+	},		
+    addHandler: function(element,type,handler) {
+        if(element.addEventListener) {
+            element.addEventListener(type,handler,false);
+        }else if(element.attachEvent) {
+            element.attachEvent("on"+type,function(){handler.call(element)});
+        }else {
+            element["on" +type] = handler;
+        }
+    },
+	removeHandler: function(element,type,handler){
+        if(element.removeEventListener) {
+            element.removeEventListener(type,handler,false);
+        }else if(element.detachEvent) {
+            element.detachEvent("on"+type,handler);
+        }else {
+            element["on" +type] = null;
+        }
+    },
+
+    getEvent: function(event) {
+        return event ? event : window.event;
+    },
+    getTarget: function(event) {
+        return event.srcElement || event.target;
+    }
+};
+EventUtil.addReady(function(){
+   var oUl = document.getElementById('ul1');
+   var T = '';
+   var T2 = '';
+   for(var i=0;i<12;i++){
+    var aLi = document.createElement('li');
+	var aImg = document.createElement('img');
+	aImg.src = i + '.jpg';
+	aImg.index = i;
+	aLi.appendChild(aImg);
+	oUl.appendChild(aLi);
+   };
+   EventUtil.addHandler(oUl,'click',fn);
+   function fn(ev){
+      var Ev = EventUtil.getEvent(ev);
+	  //var oSrc = Ev.target||Ev.srcElement;
+	  var oSrc = EventUtil.getTarget(Ev);
+	 
+      if(oSrc.tagName!='IMG')return; 
+	  var n = oSrc.index;
+	  fn2();
+	  fn3(n);
+	  fn4();
+	  Clean();
+   };
+   //创建遮罩层
+   function fn2(){
+	  var screenw = document.documentElement.clientWidth||document.body.clientWidth;
+      var screenh = document.documentElement.clientHeight||document.body.clientHeight;
+      var iScrolltop = document.documentElement.scrollTop||document.body.scrollTop;
+      var aMark = document.createElement('div');
+	  aMark.id = 'mark';
+	  aMark.style.position = 'absolute';
+	  aMark.style.background = 'rgba(0,0,0,0.6)';
+	  aMark.style.width = screenw + 'px';
+	  aMark.style.height = screenh + 'px';
+	  aMark.style.top = iScrolltop + 'px';  
+      aMark.style.zIndex = 999;
+	  document.body.appendChild(aMark)
+   };
+   //创建弹出层内容
+   function fn3(N){
+      var oMark = document.getElementById('mark');
+      var aDiv = document.createElement('div');
+	  aDiv.id = 'demo';
+	  var aA = document.createElement('a');
+	  var aA2 = document.createElement('a');
+	  var aA3 = document.createElement('a');
+	  aA.href = 'javaScript:;';
+	  aA.id = 'arr_left';
+	  aA.innerHTML = '<';
+	  aA2.href = 'javaScript:;';
+	  aA2.id = 'arr_right';
+	  aA2.innerHTML = '>';
+	  aA3.href = 'javaScript:;';
+	  aA3.id = 'clean'
+	  aA3.innerHTML = 'x';
+	  aA3.style.right = '100px';	 
+	  var aDiv2 = document.createElement('div');
+	  var aImg = document.createElement('img');
+	  aDiv2.id = 'img';
+	  aImg.src = N + '.jpg';
+	  aImg.id = 'myimg';
+	  aImg.style.width = '650px';
+	  aImg.style.height = '350px';
+	  aDiv2.appendChild(aImg);
+	  aDiv.appendChild(aDiv2);
+	  oMark.appendChild(aA3);
+	  oMark.appendChild(aA2);
+	  oMark.appendChild(aA);
+	  oMark.appendChild(aDiv); 
+	  var oDem = document.getElementById('demo');
+	  var screenw = document.documentElement.clientWidth||document.body.clientWidth;
+      var screenh = document.documentElement.clientHeight||document.body.clientHeight;
+      var iScrolltop = document.documentElement.scrollTop||document.body.scrollTop;
+	  oDem.style.left = (screenw - oDem.offsetWidth)/2 + 'px';
+	  oDem.style.top = (screenh - oDem.offsetHeight)/2 + 'px';
+	  T = oDem.offsetTop;
+   };
+   //给弹出层加事件	 
+   function fn4(){
+      var screenw = document.documentElement.clientWidth||document.body.clientWidth;
+      var screenh = document.documentElement.clientHeight||document.body.clientHeight;
+	  var iScrolltop = document.documentElement.scrollTop||document.body.scrollTop;  	  
+      var oLeft  = document.getElementById('arr_left');
+	  var oRight = document.getElementById('arr_right');
+	  oLeft.style.height = screenh + 'px';
+	  oLeft.style.background = 'rgba(0,0,0,0.5)';
+	  oLeft.style.left  = '0px';
+	  oLeft.style.lineHeight = screenh + 'px';
+	  oRight.style.height = screenh + 'px';
+	  oRight.style.background = 'rgba(0,0,0,0.5)';
+	  oRight.style.right  = '0px';
+	  oRight.style.lineHeight = screenh + 'px';
+	  if(!oLeft||!oRight)return;
+	  EventUtil.addHandler(oLeft,'click',function(){
+		   rotate('myimg','left');
+		   Center();
+	  });
+	  EventUtil.addHandler(oLeft,'mouseover',function(){
+		  this.style.background = 'rgba(0,0,0,0.8)';
+		  EventUtil.addHandler(this,'mouseout',function(){
+		  this.style.background = 'rgba(0,0,0,0.5)'
+	  });
+	  });
+	  
+	  EventUtil.addHandler(oRight,'click',function(){
+           rotate('myimg','right');
+	       Center();
+	  });
+	  EventUtil.addHandler(oRight,'mouseover',function(){
+		  this.style.background = 'rgba(0,0,0,0.8)';
+		  EventUtil.addHandler(this,'mouseout',function(){
+		  this.style.background = 'rgba(0,0,0,0.5)'
+	  });
+	  });
+   };
+   //每次点击切换方向，重新定位弹出层内容位置
+   function Center(){
+    var screenw = document.documentElement.clientWidth||document.body.clientWidth;
+    var screenh = document.documentElement.clientHeight||document.body.clientHeight;
+	var iScrolltop = document.documentElement.scrollTop||document.body.scrollTop; 
+    var oDem = document.getElementById('demo');
+	oDem.style.left =  (screenw - oDem.offsetWidth)/2 + 'px';
+	oDem.style.top =  (screenh - oDem.offsetHeight)/2 + 'px';
+   };
+  //清除弹出层以及内容 
+  function Clean(){
+     var oClean = document.getElementById('clean');
+	 var oMark = document.getElementById('mark');
+	 EventUtil.addHandler(oClean,'click',function(){
+        document.body.removeChild(oMark);
+	 });
+  }; 
+  //弹出层随滚动条，自动定位
+   EventUtil.addHandler(window,'scroll',fn5);  
+   function fn5(){
+      var screenh = document.documentElement.clientHeight||document.body.clientHeight;
+      var iScrolltop = document.documentElement.scrollTop||document.body.scrollTop;
+      var oMark = document.getElementById('mark');
+	  var oDem = document.getElementById('demo');
+	  var oLeft  = document.getElementById('arr_left');
+	  var oRight = document.getElementById('arr_right');
+	  var oClean = document.getElementById('clean');
+	  if(oMark==null)return;
+	  oMark.style.top = iScrolltop + 'px';
+	  oClean.style.right = '100px';
+   };
+   //在弹出层内容处创建canvas，达到图片旋转效果
+   function rotate(obj,arr){
+	var img = document.getElementById(obj);
+	var oDem = document.getElementById('demo');
+	if(!img || !arr) return false;
+	var n = img.getAttribute('step');//获取自定义行间属性的值
+	if(n== null) n=0;
+	if(arr=='left'){
+		(n==0)? n=3:n--;
+	}else if(arr=='right'){
+		(n==3)? n=0:n++;
+	}
+	img.setAttribute('step',n);//添加自定义属性，并赋值
+	//对IE浏览器使用滤镜旋转
+	if(document.all) {
+		img.style.filter = 'progid:DXImageTransform.Microsoft.BasicImage(rotation='+ n +')';
+		//HACK FOR MSIE 8
+		switch(n){
+			case 0:
+				img.parentNode.style.height = img.height + 'px';
+				break;
+			case 1:
+				img.parentNode.style.height = img.width + 'px';
+				break;
+			case 2:
+				img.parentNode.style.height = img.height + 'px';
+				break;
+			case 3:
+				img.parentNode.style.height = img.width + 'px';;
+				break;
+		}
+	// 对现代浏览器写入HTML5的元素进行旋转： canvas
+	}else{
+		var c = document.getElementById('canvas_'+obj);
+		if(c== null){
+			img.style.visibility = 'hidden';
+			img.style.position = 'absolute';
+			c = document.createElement('canvas');
+			c.setAttribute("id",'canvas_'+obj);
+			img.parentNode.appendChild(c);
+		}
+		var canvasContext = c.getContext('2d');
+		switch(n) {
+			default :
+			case 0 :
+				c.setAttribute('width', img.width);//给canvas设置宽与图片宽度一致
+				c.setAttribute('height', img.height);//同上
+				oDem.style.width = img.width + 'px'; //让弹出层的宽和高与canvas同步
+				oDem.style.height = img.height + 'px';  
+				canvasContext.rotate(0 * Math.PI / 180); //画布旋转的角度
+				canvasContext.drawImage(img, 0, 0,img.width,img.height); //画布中图片的定位，已经像素大小
+				break;
+			case 1 :
+				c.setAttribute('width', img.height);
+				c.setAttribute('height', img.width);
+				oDem.style.width = img.height + 'px';
+				oDem.style.height = img.width + 'px';
+				canvasContext.rotate(90 * Math.PI / 180);
+				canvasContext.drawImage(img, 0, -img.height,img.width,img.height);
+				break;
+			case 2 :
+				c.setAttribute('width', img.width);
+				c.setAttribute('height', img.height);
+				oDem.style.width = img.width + 'px';
+				oDem.style.height = img.height + 'px';  
+				canvasContext.rotate(180 * Math.PI / 180);
+				canvasContext.drawImage(img, -img.width, -img.height,img.width,img.height);
+				break;
+			case 3 :
+				c.setAttribute('width', img.height);
+				c.setAttribute('height', img.width);
+				oDem.style.width = img.height + 'px';
+				oDem.style.height = img.width + 'px';
+				canvasContext.rotate(270 * Math.PI / 180);
+				canvasContext.drawImage(img, -img.width, 0,img.width,img.height);
+				break;
+		};
+	 }
+  }
+});
+</script>
+</head>
+<body>
+ <!--<div class="demo">
+     <div id="tool">
+     	<a href="#" id="arr_left" onclick="rotate('myimg','left')">向左</a>
+        <a href="#" id="arr_right" onclick="rotate('myimg','right')">向右</a>
+     </div>
+     <div id="img">
+     <img src="0.jpg" width="650" height="320" alt="" id="myimg" />
+     </div>
+  </div>-->
+ <div id="box">
+  <ul id="ul1">
+<!--       <li><img src="0.jpg" width="650" height="320" alt="" id="myimg" /></li>
+       <li><img src="0.jpg" width="650" height="320" alt="" id="myimg" /></li>
+       <li><img src="0.jpg" width="650" height="320" alt="" id="myimg" /></li>
+       <li><img src="0.jpg" width="650" height="320" alt="" id="myimg" /></li>-->
+  </ul>
+ </div>
+</html>

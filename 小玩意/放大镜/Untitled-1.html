@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<style>
+*{ margin:0; padding:0;}
+#ul1{ width:1000px; height:3000px;}
+#ul1 li{ margin-bottom:50px; list-style:none; display:block;}
+</style>
+<script>
+function addReady(handler){
+		if(document.addEventListener){
+		   document.addEventListener('DOMContentLoaded',handler, false);
+		}else{	
+		   document.attachEvent('onreadystatechange', function (){
+			  if(document.readyState=='complete'){
+					   handler();
+			  }
+		   });		
+		}		
+	};	
+addReady(function(){
+   var a = new Img();
+	a.init('img1',{                     //配置参数
+		   url:{Samll:'1.jpg',Big:'1.jpg'},
+		   Border:'1px solid #000'
+		  });	  
+	var b = new Img();
+	b.init('img2',{
+		   url:{Samll:'2.jpg',Big:'2.jpg'},
+		   Border:'1px solid #000' 
+		   });
+	var c = new Img();
+	c.init('img3',{
+		   url:{Samll:'3.jpg',Big:'3.jpg'},
+		   Border:'1px solid #000' 
+		   });
+	var d = new Img();
+	d.init('img4',{
+		   url:{Samll:'4.jpg',Big:'4.jpg'},
+		   Border:'1px solid #000' 
+		   });
+	var e = new Img();
+	e.init('img5',{                     //配置参数
+		   url:{Samll:'5.jpg',Big:'5.jpg'},
+		   Border:'1px solid #000'
+		  });	  
+	var f = new Img();
+	f.init('img6',{
+		   url:{Samll:'6.jpg',Big:'6.jpg'},
+		   Border:'1px solid #000'
+		   });
+	var g = new Img();
+	g.init('img7',{
+		   url:{Samll:'7.jpg',Big:'7.jpg'},
+		   Border:'1px solid #000' 
+		   });
+	var h = new Img();
+	h.init('img8',{
+		   url:{Samll:'8.jpg',Big:'8.jpg'},
+		   Border:'1px solid #000' 
+		   });
+	var i = new Img();
+	i.init('img9',{
+		   url:{Samll:'3.jpg',Big:'4.jpg'},
+		   Border:'1px solid #000'
+		   });
+
+});
+function Img(id){
+  this.obj = null;
+  this.oMark = null;
+  this.oLook = null;
+  this.oSmall = null;
+  this.oBig = null;
+  this.dissW = 0;
+  this.dissH = 0;
+  this.dissL = 0;
+  this.dissT = 0;
+  this.disbL = 0;
+  this.disbT = 0;
+  this.setting = {                       //默认参数
+	       url:{Samll:'b2.jpg',Big:'b1.jpg'},
+		   Border:'1px solid #000'
+		};
+  this.Borderpx = null;
+  this.iScrollTop = null;
+};
+Img.prototype = {
+	     init:function(id,opt){
+			     var That = this;
+				 this.obj = document.getElementById(id);
+				 this.fnExtend(this.setting,opt);
+				 //console.log(this.dissW,this.dissH)
+				 this.Borderpx = this.setting.Border=='none'?0:parseInt(this.setting.Border.substring(0,2));
+				 this.obj.style.position = 'relative';
+				 //预加载图片，获取图片的宽高 
+				 var img_url = this.setting.url.Samll;
+				 var a = new Image();
+				 a.src = img_url;
+				 //图片加载成功后执行动态创建
+			     a.onload = function(){ 
+				    That.dissW = a.width;
+					That.dissH = a.height; 
+				    That.fnCreate();
+			     };
+				 
+			  },
+	    fnCreate:function(){
+			         var That = this;
+					 //小图创建
+					 this.oSamll = document.createElement('img');
+					 this.oSamll.src = this.setting.url.Samll;
+					 this.oSamll.style.display = 'block';
+					 this.oSamll.style.width = this.dissW + 'px';
+					 this.oSamll.style.height = this.dissH + 'px';
+					 this.obj.appendChild(this.oSamll);				 
+					 //小图容器大小
+					 this.dissW = this.oSamll.offsetWidth;
+					 this.dissH = this.oSamll.offsetHeight;
+					 this.obj.style.width = this.oSamll.width + 'px';
+					 this.obj.style.height = this.oSamll.height + 'px';
+					 this.obj.style.border = this.setting.Border;
+					 
+					 
+					 //放大镜创建
+					 this.oMark = document.createElement('div');
+					 this.oMark.style.position = 'absolute';
+					 this.oMark.style.top = this.Borderpx + 'px';
+					 this.oMark.style.left = this.Borderpx + 'px';
+					 this.oMark.style.width = this.dissW/3 + 'px';
+					 this.oMark.style.height = this.dissH/3 + 'px';
+					 
+					 if(document.all){
+					 this.oMark.style.background = '#000';
+					 this.oMark.style.opacity = '0.3';
+					 this.oMark.style.filter = 'alpha(opacity='+30+')';
+					 }else{
+					 this.oMark.style.background = 'rgba(0,0,0,0.3)';
+					 }
+					 this.oMark.style.display = 'none';
+					 this.obj.appendChild(this.oMark);
+					 
+					 this.dissW = this.obj.offsetWidth;
+					 this.dissH = this.obj.offsetHeight;
+					 
+					 //放大图创建
+					 this.oLook = document.createElement('div');
+					 this.oLook.style.position = 'absolute';
+					 this.oLook.style.width = this.dissW + 'px';
+					 this.oLook.style.height = this.dissH + 'px';
+					 this.oLook.style.left = this.dissW +'px';
+					 this.oLook.style.top = -this.Borderpx + 'px';
+					 this.oLook.style.overflow = 'hidden';
+					 this.oBig = document.createElement('img');
+					 this.oBig.src = this.setting.url.Big;
+					 this.oBig.style.width = this.dissW * 3 + 'px';
+					 this.oBig.style.height = this.dissH * 3 + 'px';
+					 this.oBig.style.position = 'absolute';
+					 this.oBig.style.display = 'block';
+					 this.oLook.style.display = 'none';
+					 this.oLook.appendChild(this.oBig);
+					 this.obj.appendChild(this.oLook);
+					 
+					 this.fnaddEvent(this.obj,'mousemove',function(ev){
+						 var ev = ev || event;
+						 That.fnMove(ev);
+						/* if(ev.stopPropagation){
+							ev.stopPropagation();
+						 }else{
+							ev.cancelBubble=true;
+						 };*/
+					 });
+					 
+					 this.oLook.onmousemove = function(){
+						That.oMark.style.display = 'none';
+						That.oLook.style.display = 'none';
+					 };
+					 
+					 this.fnaddEvent(That.obj,'mouseleave',function(){   //mousemove + 冒泡：解决子集影响父级的BUG
+						That.oMark.style.display = 'none';                //或者mouseleave ，mouseenter
+						That.oLook.style.display = 'none';    
+					 });
+				 },
+		fnMove:function(ev){
+			      this.iScrollTop = document.documentElement.scrollTop||document.body.scrollTop;
+			      this.dissL = ev.clientX - this.oMark.offsetWidth/2 - this.obj.offsetLeft;
+				  this.dissT = ev.clientY - this.oMark.offsetHeight/2 - this.obj.offsetTop + this.iScrollTop;
+				  if(this.dissL<0){
+				     this.dissL=0;
+				  }else if(this.dissL>this.obj.clientWidth-this.oMark.offsetWidth){
+			         this.dissL=this.obj.clientWidth-this.oMark.offsetWidth;
+				  };
+				  if(this.dissT<0){
+				     this.dissT=0;
+				  }else if(this.dissT>this.obj.clientHeight-this.oMark.offsetHeight){
+				     this.dissT=this.obj.clientHeight-this.oMark.offsetHeight;
+				  };
+				  
+				  this.disbL = (this.oBig.offsetWidth / this.oSamll.offsetWidth)*this.dissL;
+				  this.disbT = (this.oBig.offsetHeight / this.oSamll.offsetHeight)*this.dissT;
+				  
+				  this.oMark.style.display = 'block';
+				  this.oMark.style.left = this.dissL + 'px';
+				  this.oMark.style.top = this.dissT + 'px';
+				  
+				  this.oLook.style.display = 'block';
+				  this.oBig.style.left = -this.disbL + 'px';
+				  this.oBig.style.top = -this.disbT + 'px';
+			   },
+		fnExtend:function(obj1,obj2){
+			        for(var attr in obj2){
+					   obj1[attr] = obj2[attr];
+					};
+				 },
+		fnaddEvent:function(obj,element,fn){
+			           obj.optional  = obj.optional||{};
+					   obj.optional[element] = obj.optional[element]||[];
+					   obj.optional[element].push(fn);
+					   
+					  if(obj.nodeType){ 
+					   if(obj.addEventListener){
+					      obj.addEventListener(element,fn,false);
+					   }else{
+					      obj.attachEvent('on'+element,function(){
+						         fn.call(obj);
+						  });
+					   };
+					  };
+		            },
+	    fngetStyle:function(obj,attr){
+			         return obj.currentStyle?obj.currentStyle[attr]:getComputedStyle(obj,false)[attr];
+				   }
+	};
+
+</script>
+</head>
+<body>
+<ul id="ul1">
+<li id="img1"></li>
+<li id="img2"></li>
+<li id="img3"></li>
+<li id="img4"></li>
+<li id="img5"></li>
+<li id="img6"></li>
+<li id="img7"></li>
+<li id="img8"></li>
+<li id="img9"></li>
+</ul>
+</body>
+</html>
